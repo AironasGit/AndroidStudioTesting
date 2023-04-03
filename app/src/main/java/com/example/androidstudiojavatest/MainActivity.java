@@ -14,13 +14,14 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 
 public class MainActivity extends AppCompatActivity {
 
     public interface WeatherCallback{
-        void onSuccess(String response);
+        void onSuccess(JSONObject response);
         void onError(String error);
     }
 
@@ -30,7 +31,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         Button btn = findViewById(R.id.getWeather);
-        TextView label = findViewById(R.id.displayTemp);
+        TextView labelTemp = findViewById(R.id.displayTemp);
+        TextView labelWindSpeed = findViewById(R.id.displayWindSpeed);
+        TextView labelWindDirection = findViewById(R.id.displayWindDirection);
+        TextView labelTime = findViewById(R.id.displayTime);
 
         double lonKaunas = 54.898521;
         double latKaunas = 23.903597;
@@ -39,13 +43,21 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 getWeatherByCoords(lonKaunas, latKaunas, new WeatherCallback() {
                     @Override
-                    public void onSuccess(String response) {
-                        label.setText(response);
+                    public void onSuccess(JSONObject response) {
+
+                        try {
+                            labelTemp.setText("Temperature: " + response.getString("temperature"));
+                            labelWindSpeed.setText("Wind Speed: " + response.getString("windspeed"));
+                            labelWindDirection.setText("Wind Direction: " + response.getString("winddirection"));
+                            labelTime.setText("Time: " + response.getString("time"));
+                        } catch (JSONException e) {
+                            throw new RuntimeException(e);
+                        }
                     }
 
                     @Override
                     public void onError(String error) {
-                        label.setText("Failed to get data");
+                        labelTemp.setText("Failed to get data");
                     }
                 });
             }
@@ -57,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
                 new Response.Listener<JSONObject>() {
                     public void onResponse(JSONObject response) {
                         try {
-                            String weather = response.getString("current_weather");
+                            JSONObject weather = response.getJSONObject("current_weather");
                             callback.onSuccess(weather);
                         } catch (Exception e) {
                         }
