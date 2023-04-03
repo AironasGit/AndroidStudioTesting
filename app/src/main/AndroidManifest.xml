@@ -22,6 +22,8 @@
             </intent-filter>
         </activity>
        <activity android:name=".WeatherScreen"></activity>
+        <activity android:name=".TBDScreen1"></activity>
+        <activity android:name=".TBDScreen2"></activity>
     </application>
 
 </manifest>
